@@ -7,14 +7,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Timestamp {
     @Id
     private String id;
-    private long timestamp;
+    private long last_timestamp;
 
     public Timestamp() {
     }
 
     public Timestamp(String id, long timestamp) {
         this.id = id;
-        this.timestamp = timestamp;
+        this.last_timestamp = timestamp;
     }
 
     public String getId() {
@@ -26,10 +26,10 @@ public class Timestamp {
     }
 
     public long getTimestamp() {
-        return timestamp;
+        return last_timestamp;
     }
 
     public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
+        this.last_timestamp = timestamp;
     }
 }
