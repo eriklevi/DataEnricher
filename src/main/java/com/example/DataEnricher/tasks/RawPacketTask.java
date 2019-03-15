@@ -54,33 +54,42 @@ public class RawPacketTask {
         AtomicLong timestampOut = new AtomicLong(lastTStamp);
         Stream<Packet> stream = packetRepository.findAllByTimestampBetween(lastTStamp, endTimestamp);
         stream.forEach( p -> {
-            Optional<OUI> optionalOUIDevice = ouiRepository.findByOui(p.getDeviceMac().substring(0, 8));
-            if(optionalOUIDevice.isPresent()) {
-                p.setDeviceOUI(optionalOUIDevice.get().getShortName()); //set device mac oui
-            } else {
-                p.setDeviceOUI("Unknown");
-            }
-            List<TaggedParameter> newTags = new ArrayList<>();
-            for(TaggedParameter tp: p.getTaggedParameters()){ //scan tagged parameters to find dd
-                if(tp.getTag().startsWith("dd")){
-                    String m = tp.getTag().substring(2,8);
-                    String newM = m.charAt(0)+m.charAt(1)+":"+m.charAt(2)+m.charAt(3)+":"+m.charAt(4)+m.charAt(5);
-                    optionalOUIDevice = ouiRepository.findByOui(newM);
-                    if(optionalOUIDevice.isPresent()){
-                        TaggedParameterDD taggedParameterDD = new TaggedParameterDD(tp.getTag(),tp.getLength(), tp.getValue(),optionalOUIDevice.get().getShortName());
-                        newTags.add(taggedParameterDD);
-                    } else{
-                        TaggedParameterDD taggedParameterDD = new TaggedParameterDD(tp.getTag(),tp.getLength(), tp.getValue(),"Unknown");
-                        newTags.add(taggedParameterDD);
-                    }
-                }else{
-                    newTags.add(tp);
+            try {
+                Optional<OUI> optionalOUIDevice = ouiRepository.findByOui(p.getDeviceMac().substring(0, 8));
+                if(optionalOUIDevice.isPresent()) {
+                    p.setDeviceOUI(optionalOUIDevice.get().getShortName()); //set device mac oui
+                } else {
+                    p.setDeviceOUI("Unknown");
                 }
+                List<TaggedParameter> newTags = new ArrayList<>();
+                for(TaggedParameter tp: p.getTaggedParameters()){ //scan tagged parameters to find dd
+                    if(tp.getTag().startsWith("dd")){
+                        String m = tp.getTag().substring(2,8);
+                        String newM = m.charAt(0)+m.charAt(1)+":"+m.charAt(2)+m.charAt(3)+":"+m.charAt(4)+m.charAt(5);
+                        optionalOUIDevice = ouiRepository.findByOui(newM);
+                        if(optionalOUIDevice.isPresent()){
+                            TaggedParameterDD taggedParameterDD = new TaggedParameterDD(tp.getTag(),tp.getLength(), tp.getValue(),optionalOUIDevice.get().getShortName());
+                            newTags.add(taggedParameterDD);
+                        } else{
+                            TaggedParameterDD taggedParameterDD = new TaggedParameterDD(tp.getTag(),tp.getLength(), tp.getValue(),"Unknown");
+                            newTags.add(taggedParameterDD);
+                        }
+                    }else{
+                        newTags.add(tp);
+                    }
+                }
+                p.setTaggedParameters(newTags);
+                packetRepository.save(p);
+                if(p.getTimestamp() > lastTStamp)
+                    timestampOut.set(p.getTimestamp());
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+                timestamp.setTimestamp(timestampOut.get());
+                timestampRepository.save(timestamp);
+                Instant finish = Instant.now();
+                long timeElapsed = Duration.between(start,finish).toMinutes();
+                logger.info("updateData task took "+ timeElapsed+ "minutes");
             }
-            p.setTaggedParameters(newTags);
-            packetRepository.save(p);
-            if(p.getTimestamp() > lastTStamp)
-                timestampOut.set(p.getTimestamp());
         } );
         timestamp.setTimestamp(timestampOut.get());
         timestampRepository.save(timestamp);
