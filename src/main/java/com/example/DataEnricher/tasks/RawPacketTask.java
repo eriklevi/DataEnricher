@@ -1,6 +1,7 @@
 package com.example.DataEnricher.tasks;
 
 
+import com.example.DataEnricher.HelperMethods;
 import com.example.DataEnricher.entities.*;
 import com.example.DataEnricher.repositories.OUIRepository;
 import com.example.DataEnricher.repositories.PacketRepository;
@@ -10,13 +11,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.DigestUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
 import java.time.*;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
@@ -59,26 +64,27 @@ public class RawPacketTask {
             try {
                     Optional<OUI> optionalOUIDevice = ouiRepository.findByOui(p.getDeviceMac().substring(0, 8));
                     if (optionalOUIDevice.isPresent()) {
-                        p.setDeviceOUI(optionalOUIDevice.get().getShortName()); //set device mac oui
+                        p.setDeviceOui(optionalOUIDevice.get().getShortName()); //set device mac oui
                     } else {
-                        p.setDeviceOUI("Unknown");
+                        p.setDeviceOui("Unknown");
                     }
 
                 List<TaggedParameter> newTags = new ArrayList<>();
                 for (TaggedParameter tp : p.getTaggedParameters()) { //scan tagged parameters to find dd
                     if (tp.getTag().startsWith("dd")) {
                         String m = tp.getTag().substring(2, 8);
-                        String newM = m.charAt(0) + m.charAt(1) + ":" + m.charAt(2) + m.charAt(3) + ":" + m.charAt(4) + m.charAt(5);
+                        String newM = ""+m.charAt(0) + m.charAt(1) + ":" + m.charAt(2) + m.charAt(3) + ":" + m.charAt(4) + m.charAt(5);
                         optionalOUIDevice = ouiRepository.findByOui(newM);
                         if (optionalOUIDevice.isPresent()) {
-                            TaggedParameterDD taggedParameterDD = new TaggedParameterDD(tp.getTag(), tp.getLength(), tp.getValue(), optionalOUIDevice.get().getShortName());
+                            TaggedParameterDD taggedParameterDD = new TaggedParameterDD(tp.getTag(), tp.getLength(), tp.getValue(), optionalOUIDevice.get().getShortName(), optionalOUIDevice.get().getCompleteName());
                             newTags.add(taggedParameterDD);
                         } else {
-                            TaggedParameterDD taggedParameterDD = new TaggedParameterDD(tp.getTag(), tp.getLength(), tp.getValue(), "Unknown");
+                            TaggedParameterDD taggedParameterDD = new TaggedParameterDD(tp.getTag(), tp.getLength(), tp.getValue(), "Unknown", "Unknown");
                             newTags.add(taggedParameterDD);
                         }
                     } else {
                         newTags.add(tp);
+
                     }
                 }
                 p.setTaggedParameters(newTags);
@@ -92,6 +98,27 @@ public class RawPacketTask {
                 p.setQuarter(t.getMinute()/15+1); //raggruppo su 15 minuti 1-4...0-14 15-29.....
                 p.setFiveMinute(t.getMinute()/5+1); //raggruppo per 5 minuti 1-12...0-4 5-9.....
                 p.setMinute(t.getMinute());
+                //calcoliamo fingerprint
+                Integer lengthWithoutTag00 = p.getTaggedParametersLength()-p.getTaggedParameters().get(0).getLength(); //tag 00 is always first
+                byte[] length = ByteBuffer.allocate(4).putInt(lengthWithoutTag00).array();
+                String tagList = p.getTaggedParameters().stream()
+                        .map( o -> o.getTag())
+                        .collect(Collectors.joining(""));
+                String contentList = p.getTaggedParameters().stream()
+                        .filter( o -> {
+                            String tag = o.getTag();
+                            if(tag.equals("00") || tag.equals("03"))
+                                return false;
+                            return false;
+                        })
+                        .map(o -> o.getValue())
+                        .collect(Collectors.joining(""));
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                outputStream.write(length);
+                outputStream.write(tagList.getBytes());
+                outputStream.write(contentList.getBytes());
+                //data = (lunghezzaPayload - lunghezzaSSID) + stringa dei tag + contenuto dei tag scelti
+                p.setFingerprint(HelperMethods.bytesToHex(DigestUtils.md5Digest(outputStream.toByteArray())));
                 packetRepository.save(p);
                 if (p.getTimestamp() > timestampOut.get())
                     timestampOut.set(p.getTimestamp());

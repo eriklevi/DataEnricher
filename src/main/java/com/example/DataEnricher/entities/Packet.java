@@ -12,12 +12,14 @@ public class Packet {
     private long timestamp;
     private String snifferMac;
     private String deviceMac;
-    private String deviceOUI;
+    private String deviceOui;
+    private String completeDeviceOui;
     private boolean global;
     private String rawData;
+    private String fingerprint;
     private int sequenceNumber;
     private List<TaggedParameter> taggedParameters;
-    private int taggedParametersLength;
+    private int taggedParametersLength; //attenzione è la lunghezza della stringa, bisogna fare diviso 2
     private int year;
     private int month;
     private int weekOfYear; //week of year
@@ -31,11 +33,11 @@ public class Packet {
 
     public Packet(){}
 
-    public Packet(long timestamp, String snifferMac, String deviceMac, String deviceOUI, boolean global, String rawData, int sequenceNumber, List<TaggedParameter> taggedParameters, int taggedParametersLength) {
+    public Packet(long timestamp, String snifferMac, String deviceMac, String deviceOui, boolean global, String rawData, int sequenceNumber, List<TaggedParameter> taggedParameters, int taggedParametersLength) {
         this.timestamp = timestamp;
         this.snifferMac = snifferMac;
         this.deviceMac = deviceMac;
-        this.deviceOUI = deviceOUI;
+        this.deviceOui = deviceOui;
         this.global = global;
         this.rawData = rawData;
         this.sequenceNumber = sequenceNumber;
@@ -115,12 +117,12 @@ public class Packet {
         this.taggedParametersLength = taggedParametersLength;
     }
 
-    public String getDeviceOUI() {
-        return deviceOUI;
+    public String getDeviceOui() {
+        return deviceOui;
     }
 
-    public void setDeviceOUI(String deviceOUI) {
-        this.deviceOUI = deviceOUI;
+    public void setDeviceOui(String deviceOui) {
+        this.deviceOui = deviceOui;
     }
 
     public int getYear() {
@@ -192,5 +194,21 @@ public class Packet {
 
     public void setDayOfWeek(int dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
+    }
+
+    public String getCompleteDeviceOui() {
+        return completeDeviceOui;
+    }
+
+    public void setCompleteDeviceOui(String completeDeviceOui) {
+        this.completeDeviceOui = completeDeviceOui;
+    }
+
+    public String getFingerprint() {
+        return fingerprint;
+    }
+
+    public void setFingerprint(String fingerprint) {
+        this.fingerprint = fingerprint;
     }
 }
