@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Document("rawPacketsTest")
+@Document("rawPackets")
 public class Packet {
     @Id
     private String id;
@@ -18,6 +18,16 @@ public class Packet {
     private int sequenceNumber;
     private List<TaggedParameter> taggedParameters;
     private int taggedParametersLength;
+    private int year;
+    private int month;
+    private int weekOfYear; //week of year
+    private int dayOfMonth;
+    private int dayOfWeek;
+    private int hour;
+    private int quarter;
+    private int fiveMinute;
+    private int minute;
+
 
     public Packet(){}
 
@@ -111,5 +121,76 @@ public class Packet {
 
     public void setDeviceOUI(String deviceOUI) {
         this.deviceOUI = deviceOUI;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    public int getMonth() {
+        return month;
+    }
+
+    public void setMonth(int month) {
+        this.month = month;
+    }
+
+    public int getWeekOfYear() {
+        return weekOfYear;
+    }
+
+    public void setWeekOfYear(int weekOfYear) {
+        this.weekOfYear = weekOfYear;
+    }
+
+    public int getDayOfMonth() {
+        return dayOfMonth;
+    }
+
+    public void setDayOfMonth(int date) {
+        this.dayOfMonth = date;
+    }
+
+    public int getHour() {
+        return hour;
+    }
+
+    public void setHour(int hour) {
+        this.hour = hour;
+    }
+
+    public int getQuarter() {
+        return quarter;
+    }
+
+    public void setQuarter(int quarter) {
+        this.quarter = quarter;
+    }
+
+    public int getFiveMinute() {
+        return fiveMinute;
+    }
+
+    public void setFiveMinute(int fiveMinute) {
+        this.fiveMinute = fiveMinute;
+    }
+
+    public int getMinute() {
+        return minute;
+    }
+
+    public void setMinute(int minute) {
+        this.minute = minute;
+    }
+    public int getDayOfWeek() {
+        return dayOfWeek;
+    }
+
+    public void setDayOfWeek(int dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
     }
 }
