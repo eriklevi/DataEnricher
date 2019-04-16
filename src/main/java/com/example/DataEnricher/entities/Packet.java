@@ -17,6 +17,8 @@ public class Packet {
     private boolean global;
     private String rawData;
     private String fingerprint;
+    private String fingerprintv2;
+    private String fingerprintv3;
     private int sequenceNumber;
     private List<TaggedParameter> taggedParameters;
     private int taggedParametersLength; //attenzione è la lunghezza della stringa, bisogna fare diviso 2
@@ -210,5 +212,21 @@ public class Packet {
 
     public void setFingerprint(String fingerprint) {
         this.fingerprint = fingerprint;
+    }
+
+    public String getFingerprintv2() {
+        return fingerprintv2;
+    }
+
+    public void setFingerprintv2(String fingerprintv2) {
+        this.fingerprintv2 = fingerprintv2;
+    }
+
+    public String getFingerprintv3() {
+        return fingerprintv3;
+    }
+
+    public void setFingerprintv3(String fingerprintv3) {
+        this.fingerprintv3 = fingerprintv3;
     }
 }

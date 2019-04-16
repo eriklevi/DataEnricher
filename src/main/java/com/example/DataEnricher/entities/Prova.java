@@ -3,18 +3,14 @@ package com.example.DataEnricher.entities;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "enricherData")
-public class Timestamp {
+@Document(collection = "prova")
+public class Prova {
     @Id
     private String id;
     private long timestamp;
+    private long counterTimestamp;
 
-    public Timestamp() {
-    }
-
-    public Timestamp(String id, long timestamp) {
-        this.id = id;
-        this.timestamp = timestamp;
+    public Prova() {
     }
 
     public String getId() {
@@ -31,5 +27,13 @@ public class Timestamp {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public long getCounterTimestamp() {
+        return counterTimestamp;
+    }
+
+    public void setCounterTimestamp(long counterTimestamp) {
+        this.counterTimestamp = counterTimestamp;
     }
 }
