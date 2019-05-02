@@ -5,8 +5,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Document("rawPackets")
-public class Packet {
+@Document("rawPacketsEnriched")
+public class EnrichedRawPacket {
     @Id
     private String id;
     private long timestamp;
@@ -33,9 +33,9 @@ public class Packet {
     private int minute;
 
 
-    public Packet(){}
+    public EnrichedRawPacket(){}
 
-    public Packet(long timestamp, String snifferMac, String deviceMac, String deviceOui, boolean global, String rawData, int sequenceNumber, List<TaggedParameter> taggedParameters, int taggedParametersLength) {
+    public EnrichedRawPacket(long timestamp, String snifferMac, String deviceMac, String deviceOui, boolean global, String rawData, int sequenceNumber, List<TaggedParameter> taggedParameters, int taggedParametersLength) {
         this.timestamp = timestamp;
         this.snifferMac = snifferMac;
         this.deviceMac = deviceMac;

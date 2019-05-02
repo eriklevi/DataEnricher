@@ -1,15 +1,12 @@
 package com.example.DataEnricher.tasks;
 
-import com.example.DataEnricher.entities.CountResult;
-import com.example.DataEnricher.entities.CountedPackets;
-import com.example.DataEnricher.entities.Packet;
-import com.example.DataEnricher.entities.Prova;
+import com.example.DataEnricher.entities.*;
 import com.example.DataEnricher.repositories.CountedPacketsRepository;
-import com.example.DataEnricher.repositories.PacketRepository;
+import com.example.DataEnricher.repositories.EnrichedRawPacketRepository;
+import com.example.DataEnricher.repositories.EnrichedParsedPacketsRepository;
 import com.example.DataEnricher.repositories.ProvaRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
@@ -32,15 +29,17 @@ public class CountProbeRequestTask {
     private Logger logger = LoggerFactory.getLogger(RawPacketTask.class);
 
     private final ProvaRepository provaRepository;
-    private final PacketRepository packetRepository;
+    private final EnrichedRawPacketRepository enrichedRawPacketRepository;
     private final MongoTemplate mongoTemplate;
     private final CountedPacketsRepository countedPacketsRepository;
+    private final EnrichedParsedPacketsRepository enrichedParsedPacketsRepository;
 
-    public CountProbeRequestTask(ProvaRepository provaRepository, PacketRepository packetRepository, MongoTemplate mongoTemplate, CountedPacketsRepository countedPacketsRepository) {
+    public CountProbeRequestTask(ProvaRepository provaRepository, EnrichedRawPacketRepository enrichedRawPacketRepository, MongoTemplate mongoTemplate, CountedPacketsRepository countedPacketsRepository, EnrichedParsedPacketsRepository enrichedParsedPacketsRepository) {
         this.provaRepository = provaRepository;
-        this.packetRepository = packetRepository;
+        this.enrichedRawPacketRepository = enrichedRawPacketRepository;
         this.mongoTemplate = mongoTemplate;
         this.countedPacketsRepository = countedPacketsRepository;
+        this.enrichedParsedPacketsRepository = enrichedParsedPacketsRepository;
     }
 
     /**
@@ -62,13 +61,23 @@ public class CountProbeRequestTask {
         Prova timestamp = provaRepository.findAll().get(0);
         if(timestamp.getCounterTimestamp() == 0){
             //non possiamo generare i timeslot da 0 in poi quindi cerchiamo il primo del db
-            Optional<Packet> optionalPacket = packetRepository.findFirstByOrderByTimestampAsc();
+            Optional<EnrichedRawPacket> optionalPacket = enrichedRawPacketRepository.findFirstByOrderByTimestampAsc();
+            Optional<EnrichedParsedPacket> optionalEnrichedParsedPacket = enrichedParsedPacketsRepository.findFirstByOrderByTimestampAsc();
+            long rawPacketTimestamp;
+            long parsedPacketTimestamp;
             if(optionalPacket.isPresent()){
-                timestamp.setTimestamp(optionalPacket.get().getTimestamp());
+                rawPacketTimestamp = optionalPacket.get().getTimestamp();
             } else {
                 logger.error("Something wrong with timestamp in counter");
                 return;
             }
+            if(optionalEnrichedParsedPacket.isPresent()){
+                parsedPacketTimestamp = optionalEnrichedParsedPacket.get().getTimestamp();
+            } else{
+                logger.error("Something wrong with timestamp in counter");
+                return;
+            }
+            timestamp.setTimestamp(Math.min(rawPacketTimestamp, parsedPacketTimestamp));
         }
         LocalDateTime ldt = Instant.ofEpochMilli(timestamp.getCounterTimestamp()).atZone(ZoneId.systemDefault()).toLocalDateTime();
         long millisToSubtract = timestamp.getCounterTimestamp()%1000;
@@ -81,7 +90,7 @@ public class CountProbeRequestTask {
         secondsToSubtract = ldtNow.getSecond()*1000;
         minutesToSubtract = ldtNow.getMinute()*60*1000;
         long lastSlot = nowTimestamp-minutesToSubtract-secondsToSubtract-millisToSubtract;
-        //we skip the iteration if this condition occur, its rare but
+        //we skip the iteration if this condition occur, its rare but can appen
         if(firstSlot == lastSlot)
             return;
         // pipeline global

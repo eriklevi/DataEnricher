@@ -4,12 +4,13 @@ package com.example.DataEnricher.tasks;
 import com.example.DataEnricher.HelperMethods;
 import com.example.DataEnricher.entities.*;
 import com.example.DataEnricher.repositories.OUIRepository;
-import com.example.DataEnricher.repositories.PacketRepository;
+import com.example.DataEnricher.repositories.EnrichedRawPacketRepository;
 import com.example.DataEnricher.repositories.ProvaRepository;
 import com.example.DataEnricher.repositories.TimestampRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
@@ -31,14 +32,14 @@ public class RawPacketTask {
     private Logger logger = LoggerFactory.getLogger(RawPacketTask.class);
 
     private final TimestampRepository timestampRepository;
-    private final PacketRepository packetRepository;
+    private final EnrichedRawPacketRepository enrichedRawPacketRepository;
     private final OUIRepository ouiRepository;
     private final ProvaRepository provaRepository;
 
     @Autowired
-    public RawPacketTask(TimestampRepository timestampRepository, PacketRepository packetRepository, OUIRepository ouiRepository, ProvaRepository provaRepository) {
+    public RawPacketTask(TimestampRepository timestampRepository, EnrichedRawPacketRepository enrichedRawPacketRepository, OUIRepository ouiRepository, ProvaRepository provaRepository) {
         this.timestampRepository = timestampRepository;
-        this.packetRepository = packetRepository;
+        this.enrichedRawPacketRepository = enrichedRawPacketRepository;
         this.ouiRepository = ouiRepository;
         this.provaRepository = provaRepository;
     }
@@ -52,7 +53,8 @@ public class RawPacketTask {
      * execution of a task and the start time of the next execution of the task.
      * --> The fixedRate property runs the scheduled task at every n milliseconds.
      */
-    @Scheduled(fixedDelayString = "${tasks.RawPacket.delay :300000}")
+    //@Scheduled(fixedDelayString = "${tasks.RawPacket.delay :300000}")
+    //@Async
     public void updateData(){
         Instant start = Instant.now();
         logger.info("Starting enricher task");
@@ -62,7 +64,7 @@ public class RawPacketTask {
         // of the last processed packet
         AtomicLong timestampOut = new AtomicLong(lastTStamp);
         long endTimestamp = Instant.now().toEpochMilli(); //this is the current time timestamp
-        Stream<Packet> stream = packetRepository.findAllByTimestampBetween(lastTStamp, endTimestamp);
+        Stream<EnrichedRawPacket> stream = enrichedRawPacketRepository.findAllByTimestampBetween(lastTStamp, endTimestamp);
         stream.forEach( p -> {
             try {
                     Optional<OUI> optionalOUIDevice = ouiRepository.findByOui(p.getDeviceMac().substring(0, 8));
@@ -123,7 +125,7 @@ public class RawPacketTask {
                 outputStream.write(contentList.getBytes());
                 //data = (lunghezzaPayload - lunghezzaSSID) + stringa dei tag + contenuto dei tag scelti
                 p.setFingerprint(HelperMethods.bytesToHex(DigestUtils.md5Digest(outputStream.toByteArray())));
-                packetRepository.save(p);
+                enrichedRawPacketRepository.save(p);
                 if (p.getTimestamp() > timestampOut.get())
                     timestampOut.set(p.getTimestamp());
 
@@ -154,7 +156,7 @@ public class RawPacketTask {
         // of the last processed packet
         AtomicLong timestampOut = new AtomicLong(lastTStamp);
         long endTimestamp = Instant.now().toEpochMilli(); //this is the current time timestamp
-        Stream<Packet> stream = packetRepository.findAllByTimestampBetween(lastTStamp, endTimestamp);
+        Stream<EnrichedRawPacket> stream = packetRepository.findAllByTimestampBetween(lastTStamp, endTimestamp);
         stream.forEach( p -> {
             try {
                 //calcoliamo fingerprint
