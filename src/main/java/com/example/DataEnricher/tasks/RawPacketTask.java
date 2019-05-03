@@ -53,6 +53,7 @@ public class RawPacketTask {
      * execution of a task and the start time of the next execution of the task.
      * --> The fixedRate property runs the scheduled task at every n milliseconds.
      */
+    /*
     //@Scheduled(fixedDelayString = "${tasks.RawPacket.delay :300000}")
     //@Async
     public void updateData(){
@@ -146,7 +147,7 @@ public class RawPacketTask {
     }
 
     //qualcosa non va, non salva il timestamp giusto
-    /*@Scheduled(fixedDelayString = "${tasks.RawPacket.delay :300000}")
+    @Scheduled(fixedDelayString = "${tasks.RawPacket.delay :300000}")
     public void newFingerprint(){
         Instant start = Instant.now();
         logger.info("Starting fingerprint task");

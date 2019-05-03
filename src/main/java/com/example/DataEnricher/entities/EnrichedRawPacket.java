@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Document("rawPacketsEnriched")
+@Document("rawPackets")
 public class EnrichedRawPacket {
     @Id
     private String id;

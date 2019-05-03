@@ -2,7 +2,7 @@ package com.example.DataEnricher.entities;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document("enrichedParsedPackets")
+@Document("parsedPackets")
 public class EnrichedParsedPacket {
     private long timestamp;
     private String snifferMac;

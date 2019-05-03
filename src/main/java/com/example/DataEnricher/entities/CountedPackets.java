@@ -13,6 +13,9 @@ public class CountedPackets {
     @Id
     private String id;
     private String snifferMac;
+    private String snifferName;
+    private String buildingName;
+    private String roomName;
     private int totalPackets;
     private int globalPackets;
     private int localPackets;
@@ -180,6 +183,30 @@ public class CountedPackets {
 
     public void setTotalEstimatedDevices(){
         this.totalEstimatedDevices = this.totalDistinctFingerprints + this.totalDistinctMacAddresses;
+    }
+
+    public String getSnifferName() {
+        return snifferName;
+    }
+
+    public void setSnifferName(String snifferName) {
+        this.snifferName = snifferName;
+    }
+
+    public String getBuildingName() {
+        return buildingName;
+    }
+
+    public void setBuildingName(String buildingName) {
+        this.buildingName = buildingName;
+    }
+
+    public String getRoomName() {
+        return roomName;
+    }
+
+    public void setRoomName(String roomName) {
+        this.roomName = roomName;
     }
 
     @Override
