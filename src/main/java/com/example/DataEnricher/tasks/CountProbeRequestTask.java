@@ -66,7 +66,7 @@ public class CountProbeRequestTask {
             logger.error("No sniffers are active at the moment!");
             return;
         }
-        Instant start = Instant.now();
+        Instant start = Instant.now().atZone(ZoneId.of("CET")).toInstant();
         logger.info("Starting counter task @ "+ start);
         Prova timestamp = provaRepository.findAll().get(0);
         if(timestamp.getCounterTimestamp() == 0){
@@ -274,7 +274,7 @@ public class CountProbeRequestTask {
             countedPacketsRepository.saveAll(map.values());
             timestamp.setCounterTimestamp(lastSlot);
             provaRepository.save(timestamp); //da mettere al fondo
-            Instant finish = Instant.now();
+            Instant finish = Instant.now().atZone(ZoneId.of("CET")).toInstant();
             logger.info("Count task terminata in {} millisecondi", Duration.between(start, finish).toMillis());
     }
 }
