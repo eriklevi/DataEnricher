@@ -179,6 +179,9 @@ public class CountProbeRequestTask {
                 cp.setSnifferName(snifferData.getName());
                 cp.setBuildingName(snifferData.getBuildingName());
                 cp.setRoomName(snifferData.getRoomName());
+                cp.setSnifferId(snifferData.getId());
+                cp.setBuildingId(snifferData.getBuildingId());
+                cp.setRoomId(snifferData.getRoomId());
                 map.put(cp.hashCode(), cp);
             }
             for(CountResult crLocal: crLocalDump){
@@ -193,6 +196,9 @@ public class CountProbeRequestTask {
                     cp.setSnifferName(snifferData.getName());
                     cp.setBuildingName(snifferData.getBuildingName());
                     cp.setRoomName(snifferData.getRoomName());
+                    cp.setSnifferId(snifferData.getId());
+                    cp.setBuildingId(snifferData.getBuildingId());
+                    cp.setRoomId(snifferData.getRoomId());
                     map.replace(cp.hashCode(), cp);
                 } else{
                     //in this case we have data for the local and not for the global for the same sniffer and same timeframe
@@ -208,6 +214,9 @@ public class CountProbeRequestTask {
                     cp.setSnifferName(snifferData.getName());
                     cp.setBuildingName(snifferData.getBuildingName());
                     cp.setRoomName(snifferData.getRoomName());
+                    cp.setSnifferId(snifferData.getId());
+                    cp.setBuildingId(snifferData.getBuildingId());
+                    cp.setRoomId(snifferData.getRoomId());
                     map.put(cp.hashCode(), cp);
                 }
             }
@@ -223,6 +232,9 @@ public class CountProbeRequestTask {
                     cp.setSnifferName(snifferData.getName());
                     cp.setBuildingName(snifferData.getBuildingName());
                     cp.setRoomName(snifferData.getRoomName());
+                    cp.setSnifferId(snifferData.getId());
+                    cp.setBuildingId(snifferData.getBuildingId());
+                    cp.setRoomId(snifferData.getRoomId());
                     map.replace(cp.hashCode(), cp);
                 } else {
                     //in this case we have data for the local and not for the global for the same sniffer and same timeframe
@@ -238,6 +250,9 @@ public class CountProbeRequestTask {
                     cp.setSnifferName(snifferData.getName());
                     cp.setBuildingName(snifferData.getBuildingName());
                     cp.setRoomName(snifferData.getRoomName());
+                    cp.setSnifferId(snifferData.getId());
+                    cp.setBuildingId(snifferData.getBuildingId());
+                    cp.setRoomId(snifferData.getRoomId());
                     map.put(cp.hashCode(), cp);
                 }
             }
@@ -253,6 +268,9 @@ public class CountProbeRequestTask {
                     cp.setSnifferName(snifferData.getName());
                     cp.setBuildingName(snifferData.getBuildingName());
                     cp.setRoomName(snifferData.getRoomName());
+                    cp.setSnifferId(snifferData.getId());
+                    cp.setBuildingId(snifferData.getBuildingId());
+                    cp.setRoomId(snifferData.getRoomId());
                     map.replace(cp.hashCode(), cp);
                 } else{
                     //in this case we have data for the local and not for the global for the same sniffer and same timeframe
@@ -268,6 +286,9 @@ public class CountProbeRequestTask {
                     cp.setSnifferName(snifferData.getName());
                     cp.setBuildingName(snifferData.getBuildingName());
                     cp.setRoomName(snifferData.getRoomName());
+                    cp.setSnifferId(snifferData.getId());
+                    cp.setBuildingId(snifferData.getBuildingId());
+                    cp.setRoomId(snifferData.getRoomId());
                     map.put(cp.hashCode(), cp);
                 }
             }

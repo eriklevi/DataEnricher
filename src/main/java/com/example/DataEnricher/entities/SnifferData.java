@@ -10,7 +10,9 @@ public class SnifferData {
     private String mac;
     private String name;
     private String buildingName;
+    private String buildingId;
     private String roomName;
+    private String roomId;
 
     public SnifferData() {
     }
@@ -53,5 +55,21 @@ public class SnifferData {
 
     public void setRoomName(String roomName) {
         this.roomName = roomName;
+    }
+
+    public String getBuildingId() {
+        return buildingId;
+    }
+
+    public void setBuildingId(String buildingId) {
+        this.buildingId = buildingId;
+    }
+
+    public String getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(String roomId) {
+        this.roomId = roomId;
     }
 }

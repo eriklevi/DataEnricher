@@ -13,8 +13,11 @@ public class CountedPackets {
     @Id
     private String id;
     private String snifferMac;
+    private String snifferId;
     private String snifferName;
     private String buildingName;
+    private String buildingId;
+    private String roomId;
     private String roomName;
     private int totalPackets;
     private int globalPackets;
@@ -29,6 +32,12 @@ public class CountedPackets {
     private int dayOfMonth;
     private int dayOfWeek;
     private int hour;
+    private int twoHour;
+    private int fourHour;
+    private int sixHour;
+    private int twelveHour;
+    private int thirtyMinute;
+    private int fifteenMinute;
     private int fiveMinute;
     private int minute;
 
@@ -209,6 +218,78 @@ public class CountedPackets {
         this.roomName = roomName;
     }
 
+    public int getTwoHour() {
+        return twoHour;
+    }
+
+    public void setTwoHour(int twoHour) {
+        this.twoHour = twoHour;
+    }
+
+    public int getFourHour() {
+        return fourHour;
+    }
+
+    public void setFourHour(int fourHour) {
+        this.fourHour = fourHour;
+    }
+
+    public int getSixHour() {
+        return sixHour;
+    }
+
+    public void setSixHour(int sixHour) {
+        this.sixHour = sixHour;
+    }
+
+    public int getTwelveHour() {
+        return twelveHour;
+    }
+
+    public void setTwelveHour(int twelveHour) {
+        this.twelveHour = twelveHour;
+    }
+
+    public int getThirtyMinute() {
+        return thirtyMinute;
+    }
+
+    public void setThirtyMinute(int thirtyMinute) {
+        this.thirtyMinute = thirtyMinute;
+    }
+
+    public int getFifteenMinute() {
+        return fifteenMinute;
+    }
+
+    public void setFifteenMinute(int fifteenMinute) {
+        this.fifteenMinute = fifteenMinute;
+    }
+
+    public String getSnifferId() {
+        return snifferId;
+    }
+
+    public void setSnifferId(String snifferId) {
+        this.snifferId = snifferId;
+    }
+
+    public String getBuildingId() {
+        return buildingId;
+    }
+
+    public void setBuildingId(String buildingId) {
+        this.buildingId = buildingId;
+    }
+
+    public String getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(String roomId) {
+        this.roomId = roomId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -236,6 +317,12 @@ public class CountedPackets {
         this.setDayOfWeek(ldt.getDayOfWeek().getValue());
         this.setHour(ldt.getHour());
         this.setFiveMinute(ldt.getMinute()/5+1);
+        this.setFifteenMinute(ldt.getMinute()/15+1);
+        this.setThirtyMinute(ldt.getMinute()/30+1);
+        this.setTwoHour(ldt.getHour()/2+1);
+        this.setFourHour(ldt.getHour()/4+1);
+        this.setSixHour(ldt.getHour()/6+1);
+        this.setTwelveHour(ldt.getHour()/12+1);
         this.setMinute(ldt.getMinute());
         this.setStartTimestamp(Timestamp.valueOf(ldt).toInstant().toEpochMilli());
     }
