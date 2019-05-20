@@ -8,7 +8,7 @@ public class CountResultId {
     private int dayOfMonth;
     private int hour;
     private int fiveMinute;
-    private String snifferMac;
+    private String snifferId;
 
 
     public CountResultId() {
@@ -54,12 +54,12 @@ public class CountResultId {
         this.fiveMinute = fiveMinute;
     }
 
-    public String getSnifferMac() {
-        return snifferMac;
+    public String getSnifferId() {
+        return snifferId;
     }
 
-    public void setSnifferMac(String snifferMac) {
-        this.snifferMac = snifferMac;
+    public void setSnifferId(String snifferId) {
+        this.snifferId = snifferId;
     }
 
     @Override
@@ -72,11 +72,11 @@ public class CountResultId {
                 dayOfMonth == that.dayOfMonth &&
                 hour == that.hour &&
                 fiveMinute == that.fiveMinute &&
-                snifferMac.equals(that.snifferMac);
+                snifferId.equals(that.snifferId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(year, month, dayOfMonth, hour, fiveMinute, snifferMac);
+        return Objects.hash(year, month, dayOfMonth, hour, fiveMinute, snifferId);
     }
 }

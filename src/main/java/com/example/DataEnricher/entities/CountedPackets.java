@@ -290,6 +290,7 @@ public class CountedPackets {
         this.roomId = roomId;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -300,12 +301,12 @@ public class CountedPackets {
                 dayOfMonth == that.dayOfMonth &&
                 hour == that.hour &&
                 fiveMinute == that.fiveMinute &&
-                Objects.equals(snifferMac, that.snifferMac);
+                Objects.equals(snifferId, that.snifferId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash( year, month, dayOfMonth, hour, fiveMinute,snifferMac);
+        return Objects.hash( year, month, dayOfMonth, hour, fiveMinute, snifferId);
     }
 
     public void setTimeFrame(CountResultId crId){

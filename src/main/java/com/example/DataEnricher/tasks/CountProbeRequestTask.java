@@ -61,7 +61,7 @@ public class CountProbeRequestTask {
         Map<String, SnifferData> listaSniffers = sniffersRepository
                 .findAll()
                 .stream()
-                .collect(Collectors.toMap(SnifferData::getMac, Function.identity()));
+                .collect(Collectors.toMap(SnifferData::getId, Function.identity()));
         if(listaSniffers.size() == 0){
             logger.error("No sniffers are active at the moment!");
             return;
@@ -114,7 +114,7 @@ public class CountProbeRequestTask {
         AggregationResults<CountResult> aggregationResults;
 
         matchOperation = match(new Criteria("global").is(true).and("timestamp").gte(firstSlot).lt(lastSlot));
-        groupOperation = group("year", "month", "dayOfMonth", "hour", "fiveMinute","snifferMac")
+        groupOperation = group("year", "month", "dayOfMonth", "hour", "fiveMinute","snifferId")
                 .count().as("totPackets")
                 .addToSet("deviceMac").as("macs");
         projectionOperation = project()
@@ -127,7 +127,7 @@ public class CountProbeRequestTask {
         List<CountResult> crGlobalDump = aggregationResults.getMappedResults();
         //pipeline local dump
         matchOperation = match(new Criteria("global").is(false).and("timestamp").gte(firstSlot).lt(lastSlot));
-        groupOperation = group("year", "month", "dayOfMonth", "hour", "fiveMinute","snifferMac")
+        groupOperation = group("year", "month", "dayOfMonth", "hour", "fiveMinute","snifferId")
                 .count().as("totPackets")
                 .addToSet("fingerprint").as("fp");
         projectionOperation = project()
@@ -139,7 +139,7 @@ public class CountProbeRequestTask {
         List<CountResult> crLocalDump = aggregationResults.getMappedResults();
         // pipeline global parsed
         matchOperation = match(new Criteria("global").is(true).and("timestamp").gte(firstSlot).lt(lastSlot));
-        groupOperation = group("year", "month", "dayOfMonth", "hour", "fiveMinute","snifferMac")
+        groupOperation = group("year", "month", "dayOfMonth", "hour", "fiveMinute","snifferId")
                 .count().as("totPackets")
                 .addToSet("deviceMac").as("macs");
         projectionOperation = project()
@@ -151,7 +151,7 @@ public class CountProbeRequestTask {
         List<CountResult> crGlobalParsed = aggregationResults.getMappedResults();
         // pipeline local parsed
         matchOperation = match(new Criteria("global").is(false).and("timestamp").gte(firstSlot).lt(lastSlot));
-        groupOperation = group("year", "month", "dayOfMonth", "hour", "fiveMinute","snifferMac")
+        groupOperation = group("year", "month", "dayOfMonth", "hour", "fiveMinute","snifferId")
                 .count().as("totPackets")
                 .addToSet("fingerprint").as("macs");
         projectionOperation = project()
@@ -174,8 +174,8 @@ public class CountProbeRequestTask {
                 cp.setLocalPackets(0);
                 cp.setTotalPackets();
                 cp.setTotalEstimatedDevices();
-                cp.setSnifferMac(crGlobal.getTimeFrame().getSnifferMac());
-                SnifferData snifferData = listaSniffers.get(cp.getSnifferMac());
+                SnifferData snifferData = listaSniffers.get(crGlobal.getTimeFrame().getSnifferId());
+                cp.setSnifferMac(snifferData.getMac());
                 cp.setSnifferName(snifferData.getName());
                 cp.setBuildingName(snifferData.getBuildingName());
                 cp.setRoomName(snifferData.getRoomName());
@@ -209,7 +209,7 @@ public class CountProbeRequestTask {
                     cp.setGlobalPackets(0);
                     cp.setTotalPackets();
                     cp.setTotalEstimatedDevices();
-                    cp.setSnifferMac(crLocal.getTimeFrame().getSnifferMac());
+                    cp.setSnifferMac(crLocal.getTimeFrame().getSnifferId());
                     SnifferData snifferData = listaSniffers.get(cp.getSnifferMac());
                     cp.setSnifferName(snifferData.getName());
                     cp.setBuildingName(snifferData.getBuildingName());
@@ -228,7 +228,7 @@ public class CountProbeRequestTask {
                     cp.setTotalDistinctMacAddresses(crGlobalP.getTotMacs()+cp.getTotalDistinctMacAddresses());
                     cp.setTotalPackets();
                     cp.setTotalEstimatedDevices();
-                    SnifferData snifferData = listaSniffers.get(cp.getSnifferMac());
+                    SnifferData snifferData = listaSniffers.get(cp.getSnifferId());
                     cp.setSnifferName(snifferData.getName());
                     cp.setBuildingName(snifferData.getBuildingName());
                     cp.setRoomName(snifferData.getRoomName());
@@ -245,8 +245,8 @@ public class CountProbeRequestTask {
                     cp.setLocalPackets(0);
                     cp.setTotalPackets();
                     cp.setTotalEstimatedDevices();
-                    cp.setSnifferMac(crGlobalP.getTimeFrame().getSnifferMac());
-                    SnifferData snifferData = listaSniffers.get(cp.getSnifferMac());
+                    SnifferData snifferData = listaSniffers.get(crGlobalP.getTimeFrame().getSnifferId());
+                    cp.setSnifferMac(snifferData.getMac());
                     cp.setSnifferName(snifferData.getName());
                     cp.setBuildingName(snifferData.getBuildingName());
                     cp.setRoomName(snifferData.getRoomName());
@@ -264,7 +264,7 @@ public class CountProbeRequestTask {
                     cp.setTotalDistinctFingerprints(crLocalP.getTotMacs() + cp.getTotalDistinctFingerprints());
                     cp.setTotalPackets();
                     cp.setTotalEstimatedDevices();
-                    SnifferData snifferData = listaSniffers.get(cp.getSnifferMac());
+                    SnifferData snifferData = listaSniffers.get(cp.getSnifferId());
                     cp.setSnifferName(snifferData.getName());
                     cp.setBuildingName(snifferData.getBuildingName());
                     cp.setRoomName(snifferData.getRoomName());
@@ -281,8 +281,8 @@ public class CountProbeRequestTask {
                     cp.setGlobalPackets(0);
                     cp.setTotalPackets();
                     cp.setTotalEstimatedDevices();
-                    cp.setSnifferMac(crLocalP.getTimeFrame().getSnifferMac());
-                    SnifferData snifferData = listaSniffers.get(cp.getSnifferMac());
+                    SnifferData snifferData = listaSniffers.get(crLocalP.getTimeFrame().getSnifferId());
+                    cp.setSnifferMac(snifferData.getMac());
                     cp.setSnifferName(snifferData.getName());
                     cp.setBuildingName(snifferData.getBuildingName());
                     cp.setRoomName(snifferData.getRoomName());
