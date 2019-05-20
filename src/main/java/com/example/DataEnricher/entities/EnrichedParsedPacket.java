@@ -1,11 +1,20 @@
 package com.example.DataEnricher.entities;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document("parsedPackets")
 public class EnrichedParsedPacket {
+    @Id
+    private String id;
     private long timestamp;
+    private String snifferId;
     private String snifferMac;
+    private String snifferName;
+    private String snifferBuilding;
+    private String snifferBuildingId;
+    private String snifferRoom;
+    private String snifferRoomId;
     private String deviceMac;
     private String deviceOui;
     private String completeDeviceOui;
@@ -21,6 +30,7 @@ public class EnrichedParsedPacket {
     private int dayOfWeek;
     private int hour;
     private int quarter;
+    private int tenMinute;
     private int fiveMinute;
     private int minute;
 
