@@ -89,13 +89,13 @@ public class CountProbeRequestTask {
             }
             timestamp.setCounterTimestamp(Math.min(rawPacketTimestamp, parsedPacketTimestamp));
         }
-        LocalDateTime ldt = Instant.ofEpochMilli(timestamp.getCounterTimestamp()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime ldt = Instant.ofEpochMilli(timestamp.getCounterTimestamp()).atZone(ZoneId.of("CET")).toLocalDateTime();
         long millisToSubtract = timestamp.getCounterTimestamp()%1000;
         long secondsToSubtract = (ldt.getSecond())*1000;
         long minutesToSubtract = (ldt.getMinute()%5)*60*1000; //rimuoviamo i minuti per arrivare ad un multiplo di 5 così da avere lo slot temporale
         long firstSlot = timestamp.getCounterTimestamp()-minutesToSubtract-secondsToSubtract-millisToSubtract;
         long nowTimestamp = Instant.now().toEpochMilli();
-        LocalDateTime ldtNow = Instant.ofEpochMilli(nowTimestamp).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime ldtNow = Instant.ofEpochMilli(nowTimestamp).atZone(ZoneId.of("CET")).toLocalDateTime();
         millisToSubtract = nowTimestamp%1000;
         secondsToSubtract = ldtNow.getSecond()*1000;
         minutesToSubtract = (ldtNow.getMinute()%5)*60*1000;

@@ -5,6 +5,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.WeekFields;
 import java.util.Objects;
 
@@ -310,7 +312,7 @@ public class CountedPackets {
     }
 
     public void setTimeFrame(CountResultId crId){
-        LocalDateTime ldt = LocalDateTime.of(crId.getYear(), crId.getMonth(), crId.getDayOfMonth(), crId.getHour(), (crId.getFiveMinute()-1)*5, 0);
+        ZonedDateTime ldt = LocalDateTime.of(crId.getYear(), crId.getMonth(), crId.getDayOfMonth(), crId.getHour(), (crId.getFiveMinute()-1)*5, 0).atZone(ZoneId.of("CET"));
         this.setYear(crId.getYear());
         this.setWeekOfYear(ldt.get(WeekFields.ISO.weekOfYear()));
         this.setMonth(ldt.getMonthValue());
@@ -325,6 +327,6 @@ public class CountedPackets {
         this.setSixHour(ldt.getHour()/6+1);
         this.setTwelveHour(ldt.getHour()/12+1);
         this.setMinute(ldt.getMinute());
-        this.setStartTimestamp(Timestamp.valueOf(ldt).toInstant().toEpochMilli());
+        this.setStartTimestamp(ldt.toEpochSecond()*1000);
     }
 }
